@@ -41,6 +41,8 @@ V1.10
 V1.11
 	-Intern Improvements
 	-Add get and set IconColor
+V1.12
+	-Add set Checked2 - Without the CheckedChange Event
 #End If
 
 
@@ -147,6 +149,12 @@ End Sub
 Public Sub setChecked(b_checked As Boolean)
 	m_isChecked = b_checked
 	Check(b_checked,m_isCheckedAnimated,True)
+End Sub
+
+'Without the CheckedChange Event
+Public Sub setChecked2(Checked As Boolean)
+	m_isChecked = Checked
+	Check(Checked,m_isCheckedAnimated,False)
 End Sub
 
 Public Sub getChecked As Boolean

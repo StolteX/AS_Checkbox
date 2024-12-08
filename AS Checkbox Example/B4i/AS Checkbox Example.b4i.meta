@@ -7,6 +7,6 @@ ModuleBreakpoints2=
 ModuleClosedNodes0=1,4
 ModuleClosedNodes1=
 ModuleClosedNodes2=1
-NavigationStack=Visual Designer,frm_main.bil,-100,5,B4XMainPage,Initialize,16,0,ASCheckbox,getEnabled,211,0,ASCheckbox,xlbl_background_Click,242,4,ASCheckbox,setDisabledIconColor,234,0,B4XMainPage,B4XPage_Created,25,6,ASCheckbox,CreateLabel,259,0,ASCheckbox,CheckedChange,327,0,ASCheckbox,IIF2,331,0,ASCheckbox,Check,137,2
+NavigationStack=ASCheckbox,getEnabled,211,0,ASCheckbox,xlbl_background_Click,242,4,ASCheckbox,setDisabledIconColor,234,0,B4XMainPage,B4XPage_Created,25,6,ASCheckbox,CreateLabel,259,0,ASCheckbox,CheckedChange,327,0,ASCheckbox,Check,137,2,ASCheckbox,UpdateStyle,137,0,ASCheckbox,setChecked2,147,2,ASCheckbox,setChecked,145,0,ASCheckbox,Class_Globals,74,0
 SelectedBuild=0
 VisibleModules=2,1
