@@ -43,16 +43,31 @@ V1.11
 	-Add get and set IconColor
 V1.12
 	-Add set Checked2 - Without the CheckedChange Event
+V2.00
+	-Add Designer Property FillUncheckedBackgroundColor
+	-Add Designer Property UncheckedBackgroundColor
+	-Add Designer Property UncheckedIconColor
+	-Add Designer Property Round
+		-Default: False
+	-Add set Theme
+	-Add get Theme_Dark
+	-Add get Theme_Light
+	-Add Designer Property ThemeChangeTransition
+		-Default: None
 #End If
 
-
-#DesignerProperty: Key: CheckedBackgroundColor, DisplayName: Checked Background Color, FieldType: Color, DefaultValue: 0xFF2D8879 
+#DesignerProperty: Key: ThemeChangeTransition, DisplayName: ThemeChangeTransition, FieldType: String, DefaultValue: None, List: None|Fade
+#DesignerProperty: Key: CheckedBackgroundColor, DisplayName: CheckedBackgroundColor, FieldType: Color, DefaultValue: 0xFF131416
 #DesignerProperty: Key: IconColor, DisplayName: Icon Color, FieldType: Color, DefaultValue: 0xFFFFFFFF
+#DesignerProperty: Key: FillUncheckedBackgroundColor, DisplayName: FillUncheckedBackgroundColor, FieldType: Boolean, DefaultValue: False
+#DesignerProperty: Key: UncheckedBackgroundColor, DisplayName: UncheckedBackgroundColor, FieldType: Color, DefaultValue: 0xFF131416
+#DesignerProperty: Key: UncheckedIconColor, DisplayName: UncheckedIconColor, FieldType: Color, DefaultValue: 0x00FFFFFF
 #DesignerProperty: Key: DisabledBackgroundColor, DisplayName: Disabled Background Color, FieldType: Color, DefaultValue: 0xFF3C4043
 #DesignerProperty: Key: DisabledIconColor, DisplayName: Disabled Icon Color, FieldType: Color, DefaultValue: 0x98FFFFFF
 #DesignerProperty: Key: BorderWidth, DisplayName: Border Width, FieldType: Int, DefaultValue: 2, MinRange: 1
+#DesignerProperty: Key: Round, DisplayName: Round, FieldType: Boolean, DefaultValue: False
 #DesignerProperty: Key: BorderCornerRadius, DisplayName: Border Corner Radius, FieldType: Int, DefaultValue: 10, MinRange: 0
-#DesignerProperty: Key: CheckedAnimated, DisplayName: Checked Animated, FieldType: Boolean, DefaultValue: True
+#DesignerProperty: Key: CheckedAnimated, DisplayName: Checked Animated, FieldType: Boolean, DefaultValue: False
 #DesignerProperty: Key: HapticFeedback, DisplayName: Haptic Feedback, FieldType: Boolean, DefaultValue: True, Description: Whether to make a haptic feedback when the user clicks on the control.
 #DesignerProperty: Key: Checked, DisplayName: Checked, FieldType: Boolean, DefaultValue: False
 #DesignerProperty: Key: Enabled, DisplayName: Enabled, FieldType: Boolean, DefaultValue: True
@@ -65,12 +80,14 @@ Sub Class_Globals
 	Public mBase As B4XView
 	Private xui As XUI 'ignore
 	Public Tag As Object
-	Private xlbl_background As B4XView
+	Private xlbl_Background As B4XView
 	
 	Private m_Icon As String 
 	Private m_isFontAswesome As Boolean = False
 	Private m_IconColor As Int
 	Private m_CheckedBackgroundColor As Int
+	Private m_UncheckedBackgroundColor As Int
+	Private m_UncheckedIconColor As Int
 	Private m_DisabledColor As Int
 	Private m_DisabledIconColor As Int
 	Private m_isChecked As Boolean = False
@@ -80,6 +97,70 @@ Sub Class_Globals
 	Private m_isHaptic As Boolean'Ignore
 	Private m_isEvent As Boolean = True
 	Private m_isEnabled As Boolean
+	Private m_isRound As Boolean
+	Private m_isFillUncheckedBackgroundColor As Boolean
+	Private m_ThemeChangeTransition As String
+	
+	Private xiv_RefreshImage As B4XView
+	
+	Type AS_CheckBox_Theme(CheckedBackgroundColor As Int,IconColor As Int,UncheckedBackgroundColor As Int,UncheckedIconColor As Int,DisabledBackgroundColor As Int,DisabledIconColor As Int)
+	
+End Sub
+
+Public Sub setTheme(Theme As AS_CheckBox_Theme)
+	
+	xiv_RefreshImage.SetBitmap(mBase.Snapshot)
+	xiv_RefreshImage.SetVisibleAnimated(0,True)
+
+	m_CheckedBackgroundColor = Theme.CheckedBackgroundColor
+	m_IconColor = Theme.IconColor
+	m_UncheckedBackgroundColor = Theme.UncheckedBackgroundColor
+	m_UncheckedIconColor = Theme.UncheckedIconColor
+	m_DisabledColor = Theme.DisabledBackgroundColor
+	m_DisabledIconColor = Theme.DisabledIconColor
+
+	
+	Sleep(0)
+	
+	UpdateStyle
+
+	Select m_ThemeChangeTransition
+		Case "None"
+			xiv_RefreshImage.SetVisibleAnimated(0,False)
+		Case "Fade"
+			Sleep(250)
+			xiv_RefreshImage.SetVisibleAnimated(250,False)
+	End Select
+	
+End Sub
+
+Public Sub getTheme_Dark As AS_CheckBox_Theme
+	
+	Dim Theme As AS_CheckBox_Theme
+	Theme.Initialize
+	Theme.CheckedBackgroundColor = xui.Color_White
+	Theme.IconColor = xui.Color_Black
+	Theme.UncheckedBackgroundColor = xui.Color_White
+	Theme.UncheckedIconColor = xui.Color_ARGB(0,255,255,255)
+	Theme.DisabledBackgroundColor = xui.Color_ARGB(255,60, 64, 67)
+	Theme.DisabledIconColor = xui.Color_ARGB(152,255,255,255)
+	
+	Return Theme
+	
+End Sub
+
+Public Sub getTheme_Light As AS_CheckBox_Theme
+	
+	Dim Theme As AS_CheckBox_Theme
+	Theme.Initialize
+	Theme.CheckedBackgroundColor = xui.Color_ARGB(255,19, 20, 22)
+	Theme.IconColor = xui.Color_White
+	Theme.UncheckedBackgroundColor = xui.Color_ARGB(255,19, 20, 22)
+	Theme.UncheckedIconColor = xui.Color_ARGB(0,255,255,255)
+	Theme.DisabledBackgroundColor = xui.Color_ARGB(255,60, 64, 67)
+	Theme.DisabledIconColor = xui.Color_ARGB(152,255,255,255)
+	
+	Return Theme
 	
 End Sub
 
@@ -94,21 +175,26 @@ Public Sub DesignerCreateView (Base As Object, Lbl As Label, Props As Map)
     Tag = mBase.Tag
     mBase.Tag = Me 
 	ini_props(Props)
-	xlbl_background = CreateLabel("xlbl_background")
-	mBase.AddView(xlbl_background,0,0,0,0)
+	xlbl_Background = CreateLabel("xlbl_background")
+	mBase.AddView(xlbl_Background,0,0,0,0)
 	
-	xlbl_background.Enabled = m_isEnabled
+	xlbl_Background.Enabled = m_isEnabled
 	
 	m_Icon = Chr(0xE5CA)
+	xlbl_Background.Text = m_Icon
+	
+	xiv_RefreshImage = CreateImageView("")
+	xiv_RefreshImage.Visible = False
+	mBase.AddView(xiv_RefreshImage,0,0,mBase.Width,mBase.Height)
 	
 	Base_Resize(mBase.Width,mBase.Height)
 	
-	Check(m_isChecked,False,False)
+	Check(False,False)
 End Sub
 
 Private Sub ini_props(Props As Map)
 	m_isEnabled = Props.GetDefault("Enabled",True)
-	
+	m_ThemeChangeTransition = Props.GetDefault("ThemeChangeTransition","None")
 	m_CheckedBackgroundColor = xui.PaintOrColorToColor(Props.Get("CheckedBackgroundColor"))
 	m_IconColor = xui.PaintOrColorToColor(Props.Get("IconColor"))
 	m_DisabledColor = xui.PaintOrColorToColor(Props.Get("DisabledBackgroundColor"))
@@ -118,12 +204,16 @@ Private Sub ini_props(Props As Map)
 	m_isCheckedAnimated = Props.Get("CheckedAnimated")
 	m_isHaptic = Props.Get("HapticFeedback")
 	m_isChecked = Props.GetDefault("Checked",False)
+	m_isFillUncheckedBackgroundColor = Props.GetDefault("FillUncheckedBackgroundColor",False)
+	m_UncheckedBackgroundColor = xui.PaintOrColorToColor(Props.GetDefault("UncheckedBackgroundColor",xui.Color_ARGB(255,19, 20, 22)))
+	m_UncheckedIconColor = xui.PaintOrColorToColor(Props.GetDefault("UncheckedIconColor",xui.Color_ARGB(0,255,255,255)))
+	m_isRound = Props.GetDefault("Round",False)
 End Sub
 
 Public Sub Base_Resize (Width As Double, Height As Double)
-	xlbl_background.SetLayoutAnimated(0,0,0,Width,Height)
+	xlbl_Background.SetLayoutAnimated(0,0,0,Width,Height)
 	#If B4J
-	Dim jo As JavaObject = xlbl_background
+	Dim jo As JavaObject = xlbl_Background
 	jo.RunMethod("setMinSize", Array(Width/2, Height/2))
 	jo.RunMethod("setMaxSize", Array(Width, Height))
 	#End If
@@ -131,71 +221,62 @@ Public Sub Base_Resize (Width As Double, Height As Double)
 End Sub
 
 Private Sub UpdateStyle
-	Dim clr_background As Int = m_CheckedBackgroundColor	
-	If m_isEnabled = False Then clr_background = m_DisabledColor
-	
-	Dim clr_icon As Int = m_IconColor
-	If m_isEnabled = False Then clr_icon = m_DisabledIconColor
-	
-	If m_isChecked = False Then
-		xlbl_background.SetColorAndBorder(xui.Color_Transparent,m_BorderWidth,clr_background,m_BorderCornerRadius)
-	Else
-		xlbl_background.SetColorAndBorder(clr_background,m_BorderWidth,clr_background,m_BorderCornerRadius)
-		xlbl_background.TextColor = clr_icon
+	Dim BackgroundColor As Int = m_CheckedBackgroundColor
+	Dim IconColor As Int = m_IconColor
+	If m_isEnabled = False Then
+		BackgroundColor = m_DisabledColor
+		IconColor = m_DisabledIconColor
+	Else If m_isChecked = False Then
+		BackgroundColor = m_UncheckedBackgroundColor
+		IconColor = m_UncheckedIconColor
 	End If
+	
+	xlbl_Background.SetColorAndBorder(IIf(m_isFillUncheckedBackgroundColor Or m_isChecked,BackgroundColor,xui.Color_Transparent),m_BorderWidth,BackgroundColor,IIf(m_isRound,xlbl_Background.Height/2, m_BorderCornerRadius))
+	xlbl_Background.TextColor = IconColor
+	
 End Sub
 
 
 Public Sub setChecked(b_checked As Boolean)
 	m_isChecked = b_checked
-	Check(b_checked,m_isCheckedAnimated,True)
+	Check(m_isCheckedAnimated,True)
 End Sub
 
 'Without the CheckedChange Event
 Public Sub setChecked2(Checked As Boolean)
 	m_isChecked = Checked
-	Check(Checked,m_isCheckedAnimated,False)
+	Check(m_isCheckedAnimated,False)
 End Sub
 
 Public Sub getChecked As Boolean
 	Return m_isChecked
 End Sub
 
-Private Sub Check(b_checked As Boolean,animated As Boolean,WithEvent As Boolean)
+Private Sub Check(isAnimated As Boolean,WithEvent As Boolean)
 	
-	If b_checked Then
-		'xlbl_background.Color = m_CheckedBackgroundColor
-		'xlbl_background.TextColor = m_IconColor
-		UpdateStyle
-		xlbl_background.SetTextAlignment("CENTER","CENTER")
-		xlbl_background.Text = m_Icon
-		xlbl_background.Font = IIf(m_isFontAswesome = False,xui.CreateMaterialIcons(1),xui.CreateFontAwesome(1))
-		Dim size As Float = 2
-		For size = 2 To 500
-			If CheckSize(size) Then Exit
-		Next
-		If size > 10 Then size = size - 5
+	UpdateStyle
+	xlbl_Background.SetTextAlignment("CENTER","CENTER")
+	xlbl_Background.Font = IIf(m_isFontAswesome = False,xui.CreateMaterialIcons(1),xui.CreateFontAwesome(1))
+	Dim size As Float = 2
+	For size = 2 To 500
+		If CheckSize(size) Then Exit
+	Next
+	If size > 10 Then size = size - 5
 		
-		If m_isCheckedAnimated = True And animated = True Then
-			xlbl_background.Font = IIf(m_isFontAswesome = False,xui.CreateMaterialIcons(1),xui.CreateFontAwesome(1))
+	If m_isCheckedAnimated = True And isAnimated = True Then
+		xlbl_Background.Font = IIf(m_isFontAswesome = False,xui.CreateMaterialIcons(1),xui.CreateFontAwesome(1))
 		
-			Jump
-			If (m_BorderCornerRadius <> 0 And xui.IsB4i = False) Or m_BorderCornerRadius = 0 Then
-				Sleep(250)
-			End If
-			
-			
-			xlbl_background.SetTextSizeAnimated(250,size)
-		Else
-			xlbl_background.Font = IIf(m_isFontAswesome = False,xui.CreateMaterialIcons(size),xui.CreateFontAwesome(size))
+		Jump
+		If (m_BorderCornerRadius <> 0 And xui.IsB4i = False) Or m_BorderCornerRadius = 0 Then
+			Sleep(250)
 		End If
-	
+			
+			
+		xlbl_Background.SetTextSizeAnimated(250,size)
 	Else
-		xlbl_background.Color = xui.Color_Transparent
-		xlbl_background.Text = ""
-		Sleep(0)
-		If m_isCheckedAnimated = True And animated = True Then Jump
+		xlbl_Background.Font = IIf(m_isFontAswesome = False,xui.CreateMaterialIcons(size),xui.CreateFontAwesome(size))
 	End If
+	
 	If WithEvent = True And m_isEvent = True Then
 		CheckedChange
 	End If
@@ -208,17 +289,50 @@ Private Sub Jump
 '	Sleep(250)
 '	tmp_lbl.SetLayoutAnimated(250,1,0,0,mBase.Width,mBase.Height)
 	#Else
-	xlbl_background.SetLayoutAnimated(250,mBase.Width/4,mBase.Height/4,mBase.Width/2,mBase.Height/2)
+	xlbl_Background.SetLayoutAnimated(250,mBase.Width/4,mBase.Height/4,mBase.Width/2,mBase.Height/2)
 	Sleep(250)
-	xlbl_background.SetLayoutAnimated(250,0,0,mBase.Width,mBase.Height)
+	xlbl_Background.SetLayoutAnimated(250,0,0,mBase.Width,mBase.Height)
 	#End If
 End Sub
 
+#Region Properties
+
+Public Sub setisround(isRound As Boolean)
+	m_isRound = isRound
+End Sub
+
+Public Sub getisRound As Boolean
+	Return m_isRound 
+End Sub
+
+Public Sub setUncheckedIconColor(UncheckedIconColor As Int)
+	m_UncheckedIconColor = UncheckedIconColor
+End Sub
+
+Public Sub getUncheckedIconColor As Int
+	Return m_UncheckedIconColor
+End Sub
+
+Public Sub setUncheckedBackgroundColor(UncheckedBackgroundColor As Int)
+	m_UncheckedBackgroundColor = UncheckedBackgroundColor
+End Sub
+
+Public Sub getUncheckedBackgroundColor As Int
+	Return m_UncheckedBackgroundColor
+End Sub
+
+Public Sub setisFillUncheckedBackgroundColor(FillUncheckedBackgroundColor As Boolean)
+	m_isFillUncheckedBackgroundColor = FillUncheckedBackgroundColor
+End Sub
+
+Public Sub getisFillUncheckedBackgroundColor As Boolean
+	Return m_isFillUncheckedBackgroundColor
+End Sub
 
 Public Sub SetIcon(icon As String,isfontawesome As Boolean)
 	m_Icon = icon
 	m_isFontAswesome = isfontawesome
-	If m_isChecked = True Then Check(m_isChecked,False,False)
+	If m_isChecked = True Then Check(False,False)
 End Sub
 
 Public Sub setBorderCornerRadius(radius As Int)
@@ -252,7 +366,7 @@ End Sub
 Public Sub setEnabled(enable As Boolean)
 	m_isEnabled = enable
 	mBase.Enabled = enable
-	xlbl_background.Enabled = enable
+	xlbl_Background.Enabled = enable
 	UpdateStyle
 End Sub
 
@@ -302,6 +416,8 @@ Public Sub setisFontAswesome(FontAwesome As Boolean)
 	m_isFontAswesome = FontAwesome
 End Sub
 
+#End Region
+
 #If B4J
 Private Sub xlbl_background_MouseClicked (EventData As MouseEvent)
 	If m_isEnabled = False Then Return
@@ -317,10 +433,10 @@ Private Sub xlbl_background_Click
 	If m_isHaptic Then XUIViewsUtils.PerformHapticFeedback(mBase)
 	If m_isChecked = True Then
 		m_isChecked = False
-		Check(m_isChecked,m_isCheckedAnimated,True)
+		Check(m_isCheckedAnimated,True)
 	Else
 		m_isChecked = True
-		Check(m_isChecked,m_isCheckedAnimated,True)
+		Check(m_isCheckedAnimated,True)
 	End If
 End Sub
 #End If
@@ -332,13 +448,13 @@ End Sub
 
 'returns true if the size is too large
 Private Sub CheckSize(size As Float) As Boolean
-	xlbl_background.TextSize = size
+	xlbl_Background.TextSize = size
 	
 		#if b4A
 		Dim stuti As StringUtils
 		Return MeasureTextWidth(xlbl_background.Text,xlbl_background.Font) > xlbl_background.Width Or stuti.MeasureMultilineTextHeight(xlbl_background,xlbl_background.Text) > xlbl_background.Height		
 		#Else		
-	Return MeasureTextWidth(xlbl_background.Text,xlbl_background.Font) > xlbl_background.Width Or MeasureTextHeight(xlbl_background.Text,xlbl_background.Font) > xlbl_background.Height
+	Return MeasureTextWidth(xlbl_Background.Text,xlbl_Background.Font) > xlbl_Background.Width Or MeasureTextHeight(xlbl_Background.Text,xlbl_Background.Font) > xlbl_Background.Height
 		#End If
 		
 End Sub
@@ -384,6 +500,12 @@ Private Sub MeasureTextHeight(Text As String, Font1 As B4XFont) As Int'Ignore
 	Dim Bounds As JavaObject = jo.RunMethod("getLayoutBounds",Null)
 	Return Bounds.RunMethod("getHeight",Null)
 #End If
+End Sub
+
+Private Sub CreateImageView(EventName As String) As B4XView
+	Dim iv As ImageView
+	iv.Initialize(EventName)
+	Return iv
 End Sub
 
 #Region Events

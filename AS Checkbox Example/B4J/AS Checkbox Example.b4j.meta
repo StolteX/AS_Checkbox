@@ -7,6 +7,6 @@ ModuleBreakpoints2=
 ModuleClosedNodes0=1,4
 ModuleClosedNodes1=
 ModuleClosedNodes2=1
-NavigationStack=ASCheckbox,setChecked,83,0,ASCheckbox,CreateLabel,180,1,ASCheckbox,Check,92,6,ASCheckbox,Class_Globals,22,0,ASCheckbox,Jump,132,0,Visual Designer,frm_main.bjl,-100,6,ASCheckbox,Base_Resize,72,6,ASCheckbox,ini_props,72,0,ASCheckbox,setCheckedAnimated,168,0,ASCheckbox,xlbl_background_MouseClicked,176,0
+NavigationStack=ASCheckbox,DesignerCreateView,170,0,ASCheckbox,MeasureTextHeight,489,0,ASCheckbox,CreateImageView,493,0,B4XMainPage,Class_Globals,12,0,ASCheckbox,getTheme_Light,144,1,ASCheckbox,getTheme_Dark,128,6,ASCheckbox,setTheme,116,4,ASCheckbox,ini_props,184,0,Visual Designer,frm_main.bjl,-100,6,B4XMainPage,B4XPage_Created,25,6
 SelectedBuild=0
 VisibleModules=2,1

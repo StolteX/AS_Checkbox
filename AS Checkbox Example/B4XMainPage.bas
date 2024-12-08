@@ -15,6 +15,8 @@ Sub Class_Globals
 	Private Root As B4XView
 	Private xui As XUI
 	Private ASCheckbox1 As ASCheckbox
+	Private ASCheckbox3 As ASCheckbox
+	Private ASCheckbox4 As ASCheckbox
 End Sub
 
 Public Sub Initialize
@@ -29,7 +31,7 @@ Private Sub B4XPage_Created (Root1 As B4XView)
 	Wait For B4XPage_Resize (Width As Int, Height As Int)
 	#End If
 	ASCheckbox1.Checked = True
-	
+
 End Sub
 
 'You can see the list of page related events in the B4XPagesManager object. The event name is B4XPage.

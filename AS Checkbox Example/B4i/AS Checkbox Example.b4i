@@ -1,4 +1,4 @@
-﻿Build1=Default,com.as.checkbox
+﻿Build1=Default,com.stoltex.checkbox
 File1=frm_main.bil
 FileGroup1=Default Group
 Group=Default Group
@@ -14,14 +14,15 @@ Version=8.45
 @EndOfDesignText@
 'Code module
 #Region  Project Attributes 
-	#ApplicationLabel: B4i Example
+	#ApplicationLabel: AS CheckBox Example
 	#Version: 1.0.0 
 	'Orientation possible values: Portrait, LandscapeLeft, LandscapeRight and PortraitUpsideDown
 	#iPhoneOrientations: Portrait, LandscapeLeft, LandscapeRight
 	#iPadOrientations: Portrait, LandscapeLeft, LandscapeRight, PortraitUpsideDown
 	#Target: iPhone, iPad
 	#ATSEnabled: True
-	#MinVersion: 8
+	#MinVersion: 11
+	#ProvisionFile: StolteX.mobileprovision
 #End Region
 
 Sub Process_Globals
